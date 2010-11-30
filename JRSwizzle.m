@@ -6,7 +6,11 @@
 	***************************************************************************/
 
 #import "JRSwizzle.h"
+#if TARGET_OS_IPHONE
+#import <objc/runtime.h>
+#else
 #import <objc/objc-class.h>
+#endif
 
 #define SetNSError(ERROR_VAR, FORMAT,...)	\
 	if (ERROR_VAR) {	\
@@ -22,13 +26,13 @@
 #if OBJC_API_VERSION >= 2
 	Method origMethod = class_getInstanceMethod(self, origSel_);
 	if (!origMethod) {
-		SetNSError(error_, @"original method %@ not found for class %@", NSStringFromSelector(origSel_), [self className]);
+		SetNSError(error_, @"original method %@ not found for class %@", NSStringFromSelector(origSel_), [self class]);
 		return NO;
 	}
 	
 	Method altMethod = class_getInstanceMethod(self, altSel_);
 	if (!altMethod) {
-		SetNSError(error_, @"alternate method %@ not found for class %@", NSStringFromSelector(altSel_), [self className]);
+		SetNSError(error_, @"alternate method %@ not found for class %@", NSStringFromSelector(altSel_), [self class]);
 		return NO;
 	}
 	
